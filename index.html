@@ -3,33 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>나의 p5.js 크리에이티브 코딩 포트폴리오</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
-
     <style>
         body { font-family: 'Noto Sans KR', sans-serif; background: #fafafa; margin: 0; padding: 40px 20px; color: #333; }
         h1 { text-align: center; margin-bottom: 40px; font-size: 2rem; color: #111; }
         
-        /* 2x2 그리드 레이아웃 */
-        .grid-container { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        @media (max-width: 768px) { .grid-container { grid-template-columns: 1fr; } } /* 모바일대응 */
+        /* 2x2 그리드 레이아웃 - align-items: start를 주어 서로 높이가 간섭하지 않게 합니다 */
+        .grid-container { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; }
+        @media (max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
 
         /* 카드 스타일 */
-        .card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 20px; display: flex; flex-direction: column; border: 1px solid #eee; }
-        .card-title { font-size: 1.1rem; font-weight: bold; margin: 0 0 10px 0; text-align: center; color: #222; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 20px; display: flex; flex-direction: column; border: 1px solid #eee; box-sizing: border-box; }
+        .card-title { font-size: 1.1rem; font-weight: bold; margin: 0 0 15px 0; text-align: center; color: #222; }
         
-        /* p5.js 캔버스가 들어갈 물음표 박스 */
+        /* p5.js가 실행될 박스 영역 */
         .canvas-box { width: 100%; height: 300px; background: #000; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; border: 2px solid #222; transition: border-color 0.2s; }
-        .canvas-box:hover { border-color: #0076ff; }
-        .question-mark { color: white; font-size: 5rem; font-weight: 300; transition: opacity 0.2s; }
-        .canvas-box canvas { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; border-radius: 6px; }
+        .canvas-box:hover { border-color: #4a90e2; }
+        .question-mark { color: white; font-size: 5rem; font-weight: 300; pointer-events: none; }
+        
+        /* iframe 스타일: 꽉 차게 배치 */
+        .canvas-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; display: none; }
 
         /* 버튼 스타일 */
-        .action-btn { background: #4a90e2; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.95rem; width: 100%; transition: background 0.2s; margin-top: auto; }
+        .action-btn { background: #4a90e2; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.95rem; width: 100%; transition: background 0.2s; }
         .action-btn:hover { background: #357abd; }
 
-        /* 접히고 펴지는 상세 설명 공간 */
-        .desc-box { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, margin-top 0.3s ease-out; background: #f5f7fa; border-radius: 6px; font-size: 0.9rem; line-height: 1.5; color: #555; }
+        /* 상세 설명 공간 */
+        .desc-box { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, margin-top 0.3s ease-out, padding 0.3s ease-out; background: #f5f7fa; border-radius: 6px; font-size: 0.9rem; line-height: 1.5; color: #555; box-sizing: border-box; }
         .desc-box.open { max-height: 200px; margin-top: 12px; padding: 15px; border: 1px solid #e1e4e8; }
     </style>
 </head>
@@ -41,8 +40,9 @@
 
         <div class="card">
             <h2 class="card-title">과제 1: 추상화 그리기</h2>
-            <div class="canvas-box" id="box1" onclick="loadSketch('./project_f/sketch.js', 'box1')">
+            <div class="canvas-box" onclick="loadProject(this, './project_f/index.html')">
                 <span class="question-mark">?</span>
+                <iframe src=""></iframe>
             </div>
             <button class="action-btn" onclick="toggleDesc('desc1')">상세 설명 보기 (접힘)</button>
             <div class="desc-box" id="desc1">
@@ -52,8 +52,9 @@
 
         <div class="card">
             <h2 class="card-title">과제 2: 캐릭터 그리기</h2>
-            <div class="canvas-box" id="box2" onclick="loadSketch('./project_p/sketch.js', 'box2')">
+            <div class="canvas-box" onclick="loadProject(this, './project_p/index.html')">
                 <span class="question-mark">?</span>
+                <iframe src=""></iframe>
             </div>
             <button class="action-btn" onclick="toggleDesc('desc2')">상세 설명 보기 (접힘)</button>
             <div class="desc-box" id="desc2">
@@ -63,8 +64,9 @@
 
         <div class="card">
             <h2 class="card-title">과제 3: 움직이는 캐릭터 그리기</h2>
-            <div class="canvas-box" id="box3" onclick="loadSketch('./project_mf/sketch.js', 'box3')">
+            <div class="canvas-box" onclick="loadProject(this, './project_mf/index.html')">
                 <span class="question-mark">?</span>
+                <iframe src=""></iframe>
             </div>
             <button class="action-btn" onclick="toggleDesc('desc3')">상세 설명 보기 (접힘)</button>
             <div class="desc-box" id="desc3">
@@ -74,45 +76,40 @@
 
         <div class="card">
             <h2 class="card-title">과제 4: 추상화에 움직임 넣기</h2>
-            <div class="canvas-box" id="box4" onclick="loadSketch('./project_mp/sketch.js', 'box4')">
+            <div class="canvas-box" onclick="loadProject(this, './project_mp/index.html')">
                 <span class="question-mark">?</span>
+                <iframe src=""></iframe>
             </div>
             <button class="action-btn" onclick="toggleDesc('desc4')">상세 설명 보기 (접힘)</button>
             <div class="desc-box" id="desc4">
-                정적인 추상화 단계에서 나아가 시간의 흐름(`frameCount`)에 따라 유기적으로 형태가 무한히 변형되는 패턴 시스템을 구축했습니다.
+                정적인 추상화 단계에서 나아가 시간의 흐름에 따라 유기적으로 형태가 무한히 변형되는 패턴 시스템을 구축했습니다.
             </div>
         </div>
 
     </div>
 
     <script>
-        // 1. 물음표를 누르면 해당 폴더의 sketch.js를 실행하는 함수
-        function loadSketch(scriptPath, containerId) {
-            const container = document.getElementById(containerId);
+        // 1. 물음표 박스를 누르면 가상 창(iframe)에 해당 과제의 index.html을 띄우는 함수
+        function loadProject(box, url) {
+            const iframe = box.querySelector('iframe');
+            const qMark = box.querySelector('.question-mark');
             
-            // 이미 캔버스가 켜져 있다면 중복 실행 방지
-            if (container.querySelector('canvas')) return;
-
-            // 물음표 글자 숨기기
-            const qMark = container.querySelector('.question-mark');
-            if (qMark) qMark.style.display = 'none';
-
-            // 기존 p5 인스턴스가 있다면 초기화 유도 (충돌 방지)
-            if (window.keyIsPressed !== undefined) {
-                // 여러 스케치가 돌 때 충돌을 최소화하기 위해 글로벌 초기화 시도
-                if(typeof remove === 'function') remove();
+            // 이미 켜져 있다면 새로고침만 작동
+            if (iframe.style.display === 'block') {
+                iframe.contentWindow.location.reload();
+                return;
             }
 
-            // 새로운 script 태그 생성 및 실행
-            const script = document.createElement('script');
-            script.src = scriptPath;
-            document.body.appendChild(script);
+            // ? 마크 숨기고 iframe 보여주기
+            qMark.style.display = 'none';
+            iframe.src = url;
+            iframe.style.display = 'block';
         }
 
         // 2. 버튼을 누르면 설명을 펼치고 접는 함수
         function toggleDesc(descId) {
             const desc = document.getElementById(descId);
-            const btn = desc.previousElementSibling; // 바로 위에 있는 버튼 선택
+            const btn = desc.previousElementSibling;
             
             if (desc.classList.contains('open')) {
                 desc.classList.remove('open');
