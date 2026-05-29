@@ -2,32 +2,33 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>나의 p5.js 크리에이티브 코딩 포트폴리오</title>
     <style>
         body { font-family: 'Noto Sans KR', sans-serif; background: #fafafa; margin: 0; padding: 40px 20px; color: #333; }
         h1 { text-align: center; margin-bottom: 40px; font-size: 2rem; color: #111; }
         
-        /* 2x2 그리드 레이아웃 - align-items: start를 주어 서로 높이가 간섭하지 않게 합니다 */
+        /* 2x2 그리드 레이아웃 (정렬 기준을 상단으로 고정하여 서로 높이 간섭을 차단) */
         .grid-container { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; }
         @media (max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
 
-        /* 카드 스타일 */
+        /* 카드 개별 스타일 */
         .card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); padding: 20px; display: flex; flex-direction: column; border: 1px solid #eee; box-sizing: border-box; }
         .card-title { font-size: 1.1rem; font-weight: bold; margin: 0 0 15px 0; text-align: center; color: #222; }
         
-        /* p5.js가 실행될 박스 영역 */
+        /* p5.js 캔버스 박스 (물음표 영역) */
         .canvas-box { width: 100%; height: 300px; background: #000; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; border: 2px solid #222; transition: border-color 0.2s; }
         .canvas-box:hover { border-color: #4a90e2; }
         .question-mark { color: white; font-size: 5rem; font-weight: 300; pointer-events: none; }
         
-        /* iframe 스타일: 꽉 차게 배치 */
+        /* 가상 창(iframe) 스타일 */
         .canvas-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; display: none; }
 
         /* 버튼 스타일 */
         .action-btn { background: #4a90e2; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.95rem; width: 100%; transition: background 0.2s; }
         .action-btn:hover { background: #357abd; }
 
-        /* 상세 설명 공간 */
+        /* 상세 설명 박스 */
         .desc-box { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, margin-top 0.3s ease-out, padding 0.3s ease-out; background: #f5f7fa; border-radius: 6px; font-size: 0.9rem; line-height: 1.5; color: #555; box-sizing: border-box; }
         .desc-box.open { max-height: 200px; margin-top: 12px; padding: 15px; border: 1px solid #e1e4e8; }
     </style>
@@ -40,7 +41,7 @@
 
         <div class="card">
             <h2 class="card-title">과제 1: 추상화 그리기</h2>
-            <div class="canvas-box" onclick="loadProject(this, './project_f/index.html')">
+            <div class="canvas-box" onclick="loadProject(this, '/p5.js/project_f/index.html')">
                 <span class="question-mark">?</span>
                 <iframe src=""></iframe>
             </div>
@@ -52,7 +53,7 @@
 
         <div class="card">
             <h2 class="card-title">과제 2: 캐릭터 그리기</h2>
-            <div class="canvas-box" onclick="loadProject(this, './project_p/index.html')">
+            <div class="canvas-box" onclick="loadProject(this, '/p5.js/project_p/index.html')">
                 <span class="question-mark">?</span>
                 <iframe src=""></iframe>
             </div>
@@ -64,7 +65,7 @@
 
         <div class="card">
             <h2 class="card-title">과제 3: 움직이는 캐릭터 그리기</h2>
-            <div class="canvas-box" onclick="loadProject(this, './project_mf/index.html')">
+            <div class="canvas-box" onclick="loadProject(this, '/p5.js/project_mf/index.html')">
                 <span class="question-mark">?</span>
                 <iframe src=""></iframe>
             </div>
@@ -76,7 +77,8 @@
 
         <div class="card">
             <h2 class="card-title">과제 4: 추상화에 움직임 넣기</h2>
-            <div class="canvas-box" onclick="loadProject(this, './project_mp/index.html')">
+            <div class="card">
+            <div class="canvas-box" onclick="loadProject(this, '/p5.js/project_mp/index.html')">
                 <span class="question-mark">?</span>
                 <iframe src=""></iframe>
             </div>
@@ -89,24 +91,25 @@
     </div>
 
     <script>
-        // 1. 물음표 박스를 누르면 가상 창(iframe)에 해당 과제의 index.html을 띄우는 함수
+        // 물음표 박스 클릭 시 실행되는 함수
         function loadProject(box, url) {
             const iframe = box.querySelector('iframe');
             const qMark = box.querySelector('.question-mark');
             
-            // 이미 켜져 있다면 새로고침만 작동
+            // 캐시 방지를 위해 주소 뒤에 실시간 타임스탬프를 강제로 붙여 새로 불러옵니다.
+            const cleanUrl = url + "?v=" + new Date().getTime();
+
             if (iframe.style.display === 'block') {
-                iframe.contentWindow.location.reload();
+                iframe.src = cleanUrl;
                 return;
             }
 
-            // ? 마크 숨기고 iframe 보여주기
             qMark.style.display = 'none';
-            iframe.src = url;
+            iframe.src = cleanUrl;
             iframe.style.display = 'block';
         }
 
-        // 2. 버튼을 누르면 설명을 펼치고 접는 함수
+        // 설명창 열고 닫는 함수
         function toggleDesc(descId) {
             const desc = document.getElementById(descId);
             const btn = desc.previousElementSibling;
